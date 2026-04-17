@@ -34,11 +34,11 @@ export const SuggestionsTable = ({ suggestions, isLoading, selectedId, onSelect 
     <Table className="table-fixed">
       <TableHeader>
         <TableRow>
-          <TableHead className="w-[22%]">Employee</TableHead>
-          <TableHead className="hidden w-[14%] md:table-cell">Type</TableHead>
-          <TableHead>Description</TableHead>
-          <TableHead className="hidden w-[12%] sm:table-cell">Priority</TableHead>
-          <TableHead className="w-[14%]">Status</TableHead>
+          <TableHead className="sm:w-48">Employee</TableHead>
+          <TableHead className="hidden w-30 md:table-cell">Type</TableHead>
+          <TableHead className="hidden sm:table-cell">Description</TableHead>
+          <TableHead className="w-24">Priority</TableHead>
+          <TableHead className="w-30">Status</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -53,10 +53,10 @@ export const SuggestionsTable = ({ suggestions, isLoading, selectedId, onSelect 
           >
             <TableCell className="truncate font-medium">{suggestion.employee.name}</TableCell>
             <TableCell className="hidden truncate capitalize md:table-cell">{suggestion.type}</TableCell>
-            <TableCell className="truncate" title={suggestion.description}>
+            <TableCell className="hidden truncate sm:table-cell" title={suggestion.description}>
               {suggestion.description}
             </TableCell>
-            <TableCell className="hidden sm:table-cell">
+            <TableCell>
               <PriorityIndicator priority={suggestion.priority} />
             </TableCell>
             <TableCell>
