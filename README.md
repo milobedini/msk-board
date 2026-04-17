@@ -111,6 +111,10 @@ Storing filters in URL search params makes filtered views shareable and survives
 
 shadcn's Sheet component provides an accessible, animated slide-in panel with minimal code. Using `side="right"` on desktop and `side="bottom"` on mobile gives the responsive behaviour we need. The trade-off is that detecting the viewport to switch sides requires a resize listener and a `useState`, which is a small amount of imperative code in an otherwise declarative component. A more robust approach would use a CSS-only solution or a dedicated responsive sheet library, but this works well for the scope.
 
+### Responsive table vs mobile card view
+
+On narrow viewports the suggestions table hides the Type and Description columns, leaving Employee, Priority, and Status; tapping a row opens the detail sheet with the full record. A dedicated card layout per suggestion would arguably feel more native on mobile, but the brief favours smaller, simpler solutions, and the detail sheet already surfaces everything a card would duplicate. Reusing the same table component across breakpoints keeps the codebase small.
+
 ### Scope: two slices vs broader coverage
 
 The brief explicitly asks for "one or two small, well-chosen slices." I chose viewing (with filtering/pagination) and status updates because together they demonstrate a complete read-write flow through the full stack. Creating new suggestions was a close alternative but would have added form validation complexity without showing much new thinking. The trade-off is that the dashboard is not feature-complete, but completeness was explicitly not the goal.
