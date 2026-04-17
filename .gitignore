@@ -5,4 +5,4 @@ dist/
 .env.local
 .superpowers/
 CLAUDE.md
-docs/superpowers/
+docs/
