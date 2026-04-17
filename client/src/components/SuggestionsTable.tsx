@@ -15,9 +15,6 @@ interface SuggestionsTableProps {
   onSelect: (suggestion: SuggestionWithEmployee) => void;
 }
 
-const truncate = (text: string, maxLength: number): string =>
-  text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
-
 export const SuggestionsTable = ({ suggestions, isLoading, selectedId, onSelect }: SuggestionsTableProps) => {
   if (isLoading) {
     return (
@@ -34,14 +31,14 @@ export const SuggestionsTable = ({ suggestions, isLoading, selectedId, onSelect 
   }
 
   return (
-    <Table>
+    <Table className="table-fixed">
       <TableHeader>
         <TableRow>
-          <TableHead>Employee</TableHead>
-          <TableHead className="hidden md:table-cell">Type</TableHead>
+          <TableHead className="w-[22%]">Employee</TableHead>
+          <TableHead className="hidden w-[14%] md:table-cell">Type</TableHead>
           <TableHead>Description</TableHead>
-          <TableHead className="hidden sm:table-cell">Priority</TableHead>
-          <TableHead>Status</TableHead>
+          <TableHead className="hidden w-[12%] sm:table-cell">Priority</TableHead>
+          <TableHead className="w-[14%]">Status</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -54,9 +51,11 @@ export const SuggestionsTable = ({ suggestions, isLoading, selectedId, onSelect 
             )}
             onClick={() => onSelect(suggestion)}
           >
-            <TableCell className="font-medium">{suggestion.employee.name}</TableCell>
-            <TableCell className="hidden capitalize md:table-cell">{suggestion.type}</TableCell>
-            <TableCell className="max-w-75">{truncate(suggestion.description, 60)}</TableCell>
+            <TableCell className="truncate font-medium">{suggestion.employee.name}</TableCell>
+            <TableCell className="hidden truncate capitalize md:table-cell">{suggestion.type}</TableCell>
+            <TableCell className="truncate" title={suggestion.description}>
+              {suggestion.description}
+            </TableCell>
             <TableCell className="hidden sm:table-cell">
               <PriorityIndicator priority={suggestion.priority} />
             </TableCell>
