@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { useIsMobile } from '@/hooks/useMediaQuery';
 import { useUpdateSuggestion } from '@/hooks/useUpdateSuggestion';
 import type { SuggestionStatus, SuggestionWithEmployee } from '@server/types';
 import { SUGGESTION_STATUSES } from '@server/types';
@@ -35,8 +36,8 @@ const formatDate = (dateString: string): string => {
 export const SuggestionDetail = ({ suggestion, open, onOpenChange }: SuggestionDetailProps) => {
   const [status, setStatus] = useState<SuggestionStatus>(suggestion?.status ?? 'pending');
   const [notes, setNotes] = useState(suggestion?.notes ?? '');
-  const [isMobile, setIsMobile] = useState(false);
   const [prevSuggestionId, setPrevSuggestionId] = useState(suggestion?.id);
+  const isMobile = useIsMobile();
   const updateMutation = useUpdateSuggestion();
 
   if (suggestion && suggestion.id !== prevSuggestionId) {
@@ -44,13 +45,6 @@ export const SuggestionDetail = ({ suggestion, open, onOpenChange }: SuggestionD
     setStatus(suggestion.status);
     setNotes(suggestion.notes);
   }
-
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
 
   const hasChanges = suggestion && (status !== suggestion.status || notes !== suggestion.notes);
 
