@@ -2,6 +2,22 @@
 
 An admin dashboard for viewing and managing musculoskeletal (MSK) wellbeing suggestions given to employees by VIDA.
 
+Built as a technical task for Vitrue. The brief asks for one or two small, well-chosen slices of functionality that clearly demonstrate the technical approach, so this project deliberately stays narrow.
+
+## Chosen Scope
+
+1. **Viewing suggestions** — paginated table with server-side filtering by status, type, and employee
+2. **Updating status** — click a row to open a detail panel, change status and notes, save
+
+Together these cover a full read-write round trip across the stack (UI → HTTP → validation → store → response → cache invalidation), which shows more about how the codebase is structured than a third slice would.
+
+## Tech Stack
+
+- **Frontend:** Next.js 16 (App Router), React 19, TanStack Query, Tailwind CSS v4, shadcn/ui
+- **Backend:** Express 4, Zod for validation
+- **Data:** In-memory store seeded from `data/sample-data.json`
+- **Language:** TypeScript throughout, with shared types between client and server
+
 ## Getting Started
 
 ### Prerequisites
@@ -12,7 +28,7 @@ An admin dashboard for viewing and managing musculoskeletal (MSK) wellbeing sugg
 ### Installation
 
 ```bash
-# Install root dependencies
+# Install root dependencies (concurrently, husky, lint-staged, prettier)
 npm install
 
 # Install server dependencies
@@ -41,49 +57,129 @@ npm run dev:server   # Express API only (port 3001)
 npm run dev:client   # Next.js frontend only (port 3000)
 ```
 
+### Quality Checks
+
+```bash
+npm run type-check   # tsc --noEmit across client and server
+npm run lint         # ESLint + Prettier + type-check
+```
+
+Husky and lint-staged run ESLint and Prettier against staged files on commit.
+
+## Project Structure
+
+```
+msk-board/
+├── client/                    # Next.js App Router frontend
+│   └── src/
+│       ├── app/               # Route (single page)
+│       ├── components/        # UI components (table, filter bar, detail sheet, etc.)
+│       ├── hooks/             # TanStack Query hooks and useMediaQuery
+│       └── lib/api.ts         # Fetch wrappers
+├── server/                    # Express API
+│   └── src/
+│       ├── routes/            # suggestions.ts, employees.ts
+│       ├── data/store.ts      # In-memory store (seeded from sample data)
+│       ├── middleware/        # Error handler
+│       └── types/             # Shared types (imported by client)
+├── data/sample-data.json      # Seed data
+└── docs/brief.txt             # Original task brief
+```
+
+## API Reference
+
+All responses are JSON. Errors follow a consistent shape: `{ "error": { "message": string, "code": string } }`.
+
+### `GET /api/suggestions`
+
+Returns a paginated list of suggestions enriched with employee name, department, and risk level.
+
+Query parameters (all optional, validated with Zod):
+
+| Param        | Type                                                      | Notes              |
+| ------------ | --------------------------------------------------------- | ------------------ |
+| `status`     | `pending` \| `in_progress` \| `completed` \| `overdue`    | Filter by status   |
+| `type`       | `equipment` \| `exercise` \| `behavioural` \| `lifestyle` | Filter by type     |
+| `employeeId` | UUID                                                      | Filter by employee |
+| `page`       | positive integer                                          | Defaults to `1`    |
+| `limit`      | 1..100                                                    | Defaults to `20`   |
+
+Response:
+
+```json
+{
+  "data": [
+    /* SuggestionWithEmployee[] */
+  ],
+  "pagination": { "page": 1, "limit": 20, "total": 13, "totalPages": 1 }
+}
+```
+
+### `PATCH /api/suggestions/:id`
+
+Updates a suggestion's `status` and/or `notes`. Both fields are optional; `dateUpdated` is set on every write and `dateCompleted` is set when status becomes `completed`.
+
+Request body:
+
+```json
+{ "status": "in_progress", "notes": "Employee confirmed start date" }
+```
+
+Returns the updated record (with employee details) or `404` if the id does not exist.
+
+### `GET /api/employees`
+
+Returns all employees (used to populate the employee filter).
+
+### `GET /api/health`
+
+Liveness probe. Returns `{ "status": "ok" }`.
+
 ## Features
 
-- **View suggestions** — paginated table of MSK suggestions enriched with employee data
-- **Filter** — filter by status, suggestion type, or employee (server-side)
-- **Update status** — click a suggestion to open its detail panel, change status and add notes
-- **Responsive** — side panel on desktop, bottom sheet on mobile
+- **Paginated table** of MSK suggestions enriched with employee data
+- **Server-side filtering** by status, suggestion type, and employee
+- **Filter state in URL** — views are shareable and survive refresh
+- **Detail panel** to edit status and notes, with toast feedback on success/error
+- **Responsive layout** — side panel on desktop, bottom sheet on mobile (shadcn Sheet)
+- **Loading and error states** — skeletons while fetching, clear error message on failure
+- **Consistent visual hierarchy** — priority indicators and status badges for fast scanning
 
 ## Assumptions
 
-- No authentication is required; the dashboard is for a single admin user
-- Data is held in-memory and resets on server restart, which is acceptable for a demo
-- The sample dataset is representative of the data shape; the API supports pagination and filtering for larger datasets
-- The `overdue` status in the sample data is treated as a valid status alongside `pending`, `in_progress`, and `completed`
-- No real-time updates are needed (single user context)
+- **No authentication.** The dashboard is treated as single-admin. Adding auth would not demonstrate anything that is not already shown elsewhere.
+- **Data resets on server restart.** The in-memory store is seeded from `data/sample-data.json`, which is acceptable for a demo.
+- **Sample dataset is representative of shape, not scale.** The API and UI are built for a realistic dataset (pagination, server-side filtering) even though the sample only contains 13 rows.
+- **`overdue` is a valid status.** The sample data includes one suggestion with `status: "overdue"`, so it is accepted alongside `pending`, `in_progress`, and `completed` throughout the stack.
+- **Single-user.** No real-time updates, no concurrency control, no optimistic conflict handling.
+- **British English** for user-facing copy, American English for protocol fields (`behavioural` is kept as-is to match the sample data).
 
-## Architecture
+## Architectural Decisions
 
-### Overview
+### Overall shape
 
-The application is split into two packages:
-
-- **`server/`** — Express REST API with in-memory data store
-- **`client/`** — Next.js App Router frontend
-
-The client proxies API requests to the Express server via Next.js rewrites, so both run on separate ports during development but the frontend only makes requests to its own origin.
+Two packages in one repo: `server/` (Express REST API) and `client/` (Next.js App Router). In dev, the client proxies `/api/*` to the Express server via a Next.js rewrite, so the browser only ever calls its own origin. TypeScript types are defined once in `server/src/types/` and imported by the client via a `@server/types` path alias.
 
 ### Backend
 
-- **Express** serves a small REST API with three endpoints: list suggestions (with filtering and pagination), update a suggestion, and list employees
-- **Zod** validates all incoming request data (query parameters and request bodies)
-- **In-memory store** is seeded from `data/sample-data.json` on startup. The store interface is designed so it could be swapped for a real database without changing the API layer
-- Consistent error response format across all endpoints
+- Three endpoints: list suggestions (filtered + paginated), patch a suggestion, list employees. Plus a health check.
+- **Zod** validates every query string and request body. Any validation failure surfaces as a `400 VALIDATION_ERROR` with the first failing message.
+- **In-memory store** (`server/src/data/store.ts`) is seeded at import time and exposes `getEmployees`, `getSuggestions`, `getSuggestionById`, and `updateSuggestion`. The interface mirrors what a repository over a real database would look like, so swapping to SQLite/Postgres means changing only the store internals.
+- `getSuggestions` applies filters, then paginates, then enriches each row with an `employee` projection using a prebuilt `Map` for O(1) lookup.
 
 ### Frontend
 
-- **TanStack Query** manages all server state — caching, refetching on filter changes, and optimistic updates on status changes
-- **shadcn/ui** provides the component foundation (table, select, sheet, badge, etc.)
-- **URL search params** store filter state, making filtered views shareable and bookmarkable
-- **Responsive detail panel** uses shadcn Sheet: opens from the right on desktop, from the bottom on mobile
+- **TanStack Query** owns all server state. Query keys include filter inputs, so changing a filter triggers a new request and caches it separately. The update mutation invalidates the suggestions list on success.
+- **shadcn/ui** provides the primitives (Table, Select, Sheet, Button, Badge, Separator, Skeleton, Sonner toast). The codebase adds only thin feature components on top.
+- **URL search params** hold filter and page state. A user can bookmark or share a filtered view.
+- **Responsive detail panel** uses shadcn Sheet with `side="right"` on desktop and `side="bottom"` on mobile, toggled with a matchMedia hook.
 
-### Types
+### Error handling
 
-TypeScript types are defined once in `server/src/types/` and imported by the client via a path alias (`@server/types`). This avoids duplication without adding monorepo tooling.
+- **Server:** a custom `AppError` class (statusCode + code + message) is caught by a single error-handling middleware that returns the standard `{ error: { message, code } }` shape. Unhandled errors are logged and returned as `500 INTERNAL_ERROR` without leaking internals.
+- **Client fetch layer (`lib/api.ts`):** parses the error body where present and throws an `Error` with the server's message, so hooks and components always see a clean message.
+- **Component layer:** TanStack Query exposes `isError` on the table, which renders a friendly fallback. The update mutation surfaces failures via a toast (`sonner`).
+- **Validation:** Zod is the single source of truth for both the status enum and the type enum, imported by the client for filter controls so there is no drift between valid values on the wire and valid values in the UI.
 
 ## Trade-offs
 
@@ -106,6 +202,10 @@ Importing types directly from the server via a `tsconfig.json` path alias is the
 ### URL search params for filter state vs component state
 
 Storing filters in URL search params makes filtered views shareable and survives page refreshes. The trade-off is slightly more wiring (reading/writing URLSearchParams, syncing with React state) compared to a simple `useState`. For an admin dashboard where users might share links to specific filtered views, this is the right default.
+
+### Invalidate-on-success vs optimistic updates
+
+The update mutation invalidates the suggestions query on success rather than optimistically patching the cache. With a single-admin scenario and a fast in-memory API, the perceived latency is negligible and the code is simpler. The trade-off is a brief refetch after saving; swapping to `onMutate` + rollback would be straightforward if the API were slower.
 
 ### shadcn Sheet for detail panel vs custom drawer
 
