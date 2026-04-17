@@ -1,16 +1,16 @@
-export const SUGGESTION_STATUSES = ["pending", "in_progress", "completed", "overdue"] as const;
+export const SUGGESTION_STATUSES = ['pending', 'in_progress', 'completed', 'overdue'] as const;
 export type SuggestionStatus = (typeof SUGGESTION_STATUSES)[number];
 
-export const SUGGESTION_TYPES = ["equipment", "exercise", "behavioural", "lifestyle"] as const;
+export const SUGGESTION_TYPES = ['equipment', 'exercise', 'behavioural', 'lifestyle'] as const;
 export type SuggestionType = (typeof SUGGESTION_TYPES)[number];
 
-export const RISK_LEVELS = ["low", "medium", "high"] as const;
+export const RISK_LEVELS = ['low', 'medium', 'high'] as const;
 export type RiskLevel = (typeof RISK_LEVELS)[number];
 
-export const PRIORITY_LEVELS = ["low", "medium", "high"] as const;
+export const PRIORITY_LEVELS = ['low', 'medium', 'high'] as const;
 export type Priority = (typeof PRIORITY_LEVELS)[number];
 
-export const SUGGESTION_SOURCES = ["vida", "admin"] as const;
+export const SUGGESTION_SOURCES = ['vida', 'admin'] as const;
 export type SuggestionSource = (typeof SUGGESTION_SOURCES)[number];
 
 export interface Employee {
@@ -36,7 +36,7 @@ export interface Suggestion {
 }
 
 export interface SuggestionWithEmployee extends Suggestion {
-  employee: Pick<Employee, "name" | "department" | "riskLevel">;
+  employee: Pick<Employee, 'name' | 'department' | 'riskLevel'>;
 }
 
 export interface PaginationMeta {

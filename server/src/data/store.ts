@@ -1,13 +1,14 @@
-import { readFileSync } from "fs";
-import { resolve } from "path";
+import { readFileSync } from 'fs';
+import { resolve } from 'path';
+
 import type {
   Employee,
+  PaginatedResponse,
   Suggestion,
-  SuggestionWithEmployee,
   SuggestionStatus,
   SuggestionType,
-  PaginatedResponse,
-} from "../types/index.js";
+  SuggestionWithEmployee
+} from '../types/index.js';
 
 interface SampleData {
   employees: Employee[];
@@ -23,8 +24,8 @@ interface SuggestionFilters {
 }
 
 const loadData = (): SampleData => {
-  const filePath = resolve(process.cwd(), "..", "data", "sample-data.json");
-  const raw = readFileSync(filePath, "utf-8");
+  const filePath = resolve(process.cwd(), '..', 'data', 'sample-data.json');
+  const raw = readFileSync(filePath, 'utf-8');
   return JSON.parse(raw) as SampleData;
 };
 
@@ -36,9 +37,7 @@ export const getEmployees = (): Employee[] => {
   return [...data.employees];
 };
 
-export const getSuggestions = (
-  filters: SuggestionFilters,
-): PaginatedResponse<SuggestionWithEmployee> => {
+export const getSuggestions = (filters: SuggestionFilters): PaginatedResponse<SuggestionWithEmployee> => {
   const { status, type, employeeId, page = 1, limit = 20 } = filters;
 
   const filtered = data.suggestions.filter((s) => {
@@ -59,13 +58,13 @@ export const getSuggestions = (
       ...s,
       employee: employee
         ? { name: employee.name, department: employee.department, riskLevel: employee.riskLevel }
-        : { name: "Unknown", department: "Unknown", riskLevel: "low" as const },
+        : { name: 'Unknown', department: 'Unknown', riskLevel: 'low' as const }
     };
   });
 
   return {
     data: enriched,
-    pagination: { page, limit, total, totalPages },
+    pagination: { page, limit, total, totalPages }
   };
 };
 
@@ -78,13 +77,13 @@ export const getSuggestionById = (id: string): SuggestionWithEmployee | undefine
     ...suggestion,
     employee: employee
       ? { name: employee.name, department: employee.department, riskLevel: employee.riskLevel }
-      : { name: "Unknown", department: "Unknown", riskLevel: "low" as const },
+      : { name: 'Unknown', department: 'Unknown', riskLevel: 'low' as const }
   };
 };
 
 export const updateSuggestion = (
   id: string,
-  updates: { status?: SuggestionStatus; notes?: string },
+  updates: { status?: SuggestionStatus; notes?: string }
 ): SuggestionWithEmployee | undefined => {
   const index = data.suggestions.findIndex((s) => s.id === id);
   if (index === -1) return undefined;
@@ -100,7 +99,7 @@ export const updateSuggestion = (
   }
   suggestion.dateUpdated = now;
 
-  if (updates.status === "completed") {
+  if (updates.status === 'completed') {
     suggestion.dateCompleted = now;
   }
 
@@ -109,6 +108,6 @@ export const updateSuggestion = (
     ...suggestion,
     employee: employee
       ? { name: employee.name, department: employee.department, riskLevel: employee.riskLevel }
-      : { name: "Unknown", department: "Unknown", riskLevel: "low" as const },
+      : { name: 'Unknown', department: 'Unknown', riskLevel: 'low' as const }
   };
 };

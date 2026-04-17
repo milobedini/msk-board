@@ -1,17 +1,11 @@
-"use client";
+'use client';
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Skeleton } from "@/components/ui/skeleton";
-import { StatusBadge } from "./StatusBadge";
-import { PriorityIndicator } from "./PriorityIndicator";
-import type { SuggestionWithEmployee } from "@server/types";
+import { Skeleton } from '@/components/ui/skeleton';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import type { SuggestionWithEmployee } from '@server/types';
+
+import { PriorityIndicator } from './PriorityIndicator';
+import { StatusBadge } from './StatusBadge';
 
 interface SuggestionsTableProps {
   suggestions: SuggestionWithEmployee[];
@@ -23,12 +17,7 @@ interface SuggestionsTableProps {
 const truncate = (text: string, maxLength: number): string =>
   text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
 
-export const SuggestionsTable = ({
-  suggestions,
-  isLoading,
-  selectedId,
-  onSelect,
-}: SuggestionsTableProps) => {
+export const SuggestionsTable = ({ suggestions, isLoading, selectedId, onSelect }: SuggestionsTableProps) => {
   if (isLoading) {
     return (
       <div className="space-y-3">
@@ -40,11 +29,7 @@ export const SuggestionsTable = ({
   }
 
   if (suggestions.length === 0) {
-    return (
-      <div className="flex items-center justify-center py-12 text-muted-foreground">
-        No suggestions found.
-      </div>
-    );
+    return <div className="text-muted-foreground flex items-center justify-center py-12">No suggestions found.</div>;
   }
 
   return (
@@ -63,13 +48,13 @@ export const SuggestionsTable = ({
           <TableRow
             key={suggestion.id}
             className={`cursor-pointer transition-colors ${
-              selectedId === suggestion.id ? "bg-muted" : "hover:bg-muted/50"
+              selectedId === suggestion.id ? 'bg-muted' : 'hover:bg-muted/50'
             }`}
             onClick={() => onSelect(suggestion)}
           >
             <TableCell className="font-medium">{suggestion.employee.name}</TableCell>
-            <TableCell className="hidden md:table-cell capitalize">{suggestion.type}</TableCell>
-            <TableCell className="max-w-[300px]">{truncate(suggestion.description, 60)}</TableCell>
+            <TableCell className="hidden capitalize md:table-cell">{suggestion.type}</TableCell>
+            <TableCell className="max-w-75">{truncate(suggestion.description, 60)}</TableCell>
             <TableCell className="hidden sm:table-cell">
               <PriorityIndicator priority={suggestion.priority} />
             </TableCell>

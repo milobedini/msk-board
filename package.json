@@ -5,9 +5,31 @@
   "scripts": {
     "dev": "concurrently -n server,client -c blue,green \"npm run dev:server\" \"npm run dev:client\"",
     "dev:server": "cd server && npm run dev",
-    "dev:client": "cd client && npm run dev"
+    "dev:client": "cd client && npm run dev",
+    "prepare": "husky",
+    "type-check": "cd client && npx tsc --noEmit && cd ../server && npx tsc --noEmit",
+    "lint:eslint": "cd client && npx eslint . && cd ../server && npx eslint .",
+    "lint:prettier": "prettier --check .",
+    "lint": "npm run lint:eslint && npm run lint:prettier && npm run type-check"
+  },
+  "lint-staged": {
+    "client/**/*.{ts,tsx,js,jsx,mjs}": [
+      "bash -c 'cd client && npx eslint --fix \"$@\"' _",
+      "prettier --write"
+    ],
+    "server/**/*.{ts,tsx,js,jsx,mjs}": [
+      "bash -c 'cd server && npx eslint --fix \"$@\"' _",
+      "prettier --write"
+    ],
+    "*.{json,md,css}": [
+      "prettier --write"
+    ]
   },
   "devDependencies": {
-    "concurrently": "^9.0.0"
+    "concurrently": "^9.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
+    "prettier": "^3.8.3",
+    "prettier-plugin-tailwindcss": "^0.7.2"
   }
 }

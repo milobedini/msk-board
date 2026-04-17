@@ -1,10 +1,10 @@
 import type {
-  SuggestionWithEmployee,
   Employee,
   PaginatedResponse,
   SuggestionStatus,
   SuggestionType,
-} from "@server/types";
+  SuggestionWithEmployee
+} from '@server/types';
 
 export interface SuggestionFilters {
   status?: SuggestionStatus;
@@ -22,41 +22,41 @@ const buildQueryString = (filters: SuggestionFilters): string => {
     }
   }
   const qs = searchParams.toString();
-  return qs ? `?${qs}` : "";
+  return qs ? `?${qs}` : '';
 };
 
 export const fetchSuggestions = async (
-  filters: SuggestionFilters,
+  filters: SuggestionFilters
 ): Promise<PaginatedResponse<SuggestionWithEmployee>> => {
   const qs = buildQueryString(filters);
   const res = await fetch(`/api/suggestions${qs}`);
   if (!res.ok) {
     const body = await res.json().catch(() => null);
-    throw new Error(body?.error?.message ?? "Failed to fetch suggestions");
+    throw new Error(body?.error?.message ?? 'Failed to fetch suggestions');
   }
   return res.json();
 };
 
 export const updateSuggestion = async (
   id: string,
-  updates: { status?: SuggestionStatus; notes?: string },
+  updates: { status?: SuggestionStatus; notes?: string }
 ): Promise<{ data: SuggestionWithEmployee }> => {
   const res = await fetch(`/api/suggestions/${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(updates),
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(updates)
   });
   if (!res.ok) {
     const body = await res.json().catch(() => null);
-    throw new Error(body?.error?.message ?? "Failed to update suggestion");
+    throw new Error(body?.error?.message ?? 'Failed to update suggestion');
   }
   return res.json();
 };
 
 export const fetchEmployees = async (): Promise<{ data: Employee[] }> => {
-  const res = await fetch("/api/employees");
+  const res = await fetch('/api/employees');
   if (!res.ok) {
-    throw new Error("Failed to fetch employees");
+    throw new Error('Failed to fetch employees');
   }
   return res.json();
 };

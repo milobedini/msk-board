@@ -1,9 +1,9 @@
-import type { Priority } from "@server/types";
+import type { Priority } from '@server/types';
 
 const priorityConfig: Record<Priority, { label: string; className: string }> = {
-  high: { label: "High", className: "text-red-600" },
-  medium: { label: "Medium", className: "text-amber-600" },
-  low: { label: "Low", className: "text-slate-500" },
+  high: { label: 'High', className: 'text-red-600' },
+  medium: { label: 'Medium', className: 'text-amber-600' },
+  low: { label: 'Low', className: 'text-slate-500' }
 };
 
 export const PriorityIndicator = ({ priority }: { priority: Priority }) => {

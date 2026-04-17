@@ -1,17 +1,17 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   turbopack: {
-    root: "..",
+    root: '..'
   },
   async rewrites() {
     return [
       {
-        source: "/api/:path*",
-        destination: "http://localhost:3001/api/:path*",
-      },
+        source: '/api/:path*',
+        destination: 'http://localhost:3001/api/:path*'
+      }
     ];
-  },
+  }
 };
 
 export default nextConfig;

@@ -1,34 +1,37 @@
-import { defineConfig, globalIgnores } from 'eslint/config';
-import nextVitals from 'eslint-config-next/core-web-vitals';
-import nextTs from 'eslint-config-next/typescript';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
-import tailwindcss from 'eslint-plugin-tailwindcss';
+import tseslint from 'typescript-eslint';
 
-const eslintConfig = defineConfig([
-  ...nextVitals,
-  ...nextTs,
-  globalIgnores(['.next/**', 'out/**', 'build/**', 'next-env.d.ts']),
+export default tseslint.config(
+  ...tseslint.configs.recommended,
+  { ignores: ['dist/**'] },
   {
+    languageOptions: {
+      globals: {
+        console: 'readonly',
+        process: 'readonly',
+        __dirname: 'readonly',
+        __filename: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly'
+      }
+    },
     plugins: {
-      'simple-import-sort': simpleImportSort,
-      tailwindcss
+      'simple-import-sort': simpleImportSort
     },
     rules: {
       'no-undef': 'error',
-      'no-console': 'warn',
-      'react/react-in-jsx-scope': 'off',
-      'tailwindcss/no-custom-classname': 'off',
       'simple-import-sort/imports': [
         'error',
         {
           groups: [
-            ['^react', '^\\w', '^@?', '^@frw?\\w'],
+            ['^\\w', '^@?', '^@frw?\\w'],
             ['^src(/.*|$)'],
             ['^\\u0000'],
             ['^\\.\\.(?!/?$)', '^\\.\\./?$'],
             ['^\\./(?=.*/)(?!/?$)', '^\\.(?!/?$)', '^\\./?$'],
-            ['^.+\\.(json|png|jpg|jpeg|txt)$'],
-            ['^.+\\.(css|scss)$']
+            ['^.+\\.(json|png|jpg|jpeg|txt)$']
           ]
         }
       ],
@@ -55,10 +58,7 @@ const eslintConfig = defineConfig([
     },
     rules: {
       '@typescript-eslint/no-require-imports': 'off',
-      'no-console': 'off',
-      'react/display-name': 'off'
+      'no-console': 'off'
     }
   }
-]);
-
-export default eslintConfig;
+);

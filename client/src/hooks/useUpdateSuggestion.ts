@@ -1,7 +1,7 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateSuggestion } from "@/lib/api";
-import { toast } from "sonner";
-import type { SuggestionStatus } from "@server/types";
+import { toast } from 'sonner';
+import { updateSuggestion } from '@/lib/api';
+import type { SuggestionStatus } from '@server/types';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface UpdateVariables {
   id: string;
@@ -14,11 +14,11 @@ export const useUpdateSuggestion = () => {
   return useMutation({
     mutationFn: ({ id, updates }: UpdateVariables) => updateSuggestion(id, updates),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["suggestions"] });
-      toast.success("Suggestion updated successfully");
+      queryClient.invalidateQueries({ queryKey: ['suggestions'] });
+      toast.success('Suggestion updated successfully');
     },
     onError: (error: Error) => {
-      toast.error(error.message || "Failed to update suggestion");
-    },
+      toast.error(error.message || 'Failed to update suggestion');
+    }
   });
 };
