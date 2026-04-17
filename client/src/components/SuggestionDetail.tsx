@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { clsx } from 'clsx';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
@@ -64,7 +65,7 @@ export const SuggestionDetail = ({ suggestion, open, onOpenChange }: SuggestionD
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side={isMobile ? 'bottom' : 'right'}
-        className={isMobile ? 'h-[85vh] overflow-y-auto' : 'w-full overflow-y-auto sm:max-w-md'}
+        className={clsx('w-full max-w-lg overflow-y-auto p-4', isMobile && 'h-[85vh] max-w-full')}
       >
         <SheetHeader>
           <SheetTitle>Suggestion Detail</SheetTitle>
@@ -74,7 +75,7 @@ export const SuggestionDetail = ({ suggestion, open, onOpenChange }: SuggestionD
         </SheetHeader>
 
         <div className="mt-6 space-y-6">
-          <div className="bg-muted/50 rounded-lg p-4">
+          <div className="bg-muted/80 rounded-lg p-4">
             <p className="text-muted-foreground mb-1 text-xs font-medium uppercase">{suggestion.type}</p>
             <p className="text-sm leading-relaxed">{suggestion.description}</p>
           </div>
@@ -146,10 +147,14 @@ export const SuggestionDetail = ({ suggestion, open, onOpenChange }: SuggestionD
           </div>
 
           <div className="flex gap-3 pt-2">
-            <Button variant="outline" className="flex-1" onClick={() => onOpenChange(false)}>
+            <Button variant="outline" className="flex-1 cursor-pointer" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button className="flex-1" onClick={handleSave} disabled={!hasChanges || updateMutation.isPending}>
+            <Button
+              className="flex-1 cursor-pointer"
+              onClick={handleSave}
+              disabled={!hasChanges || updateMutation.isPending}
+            >
               {updateMutation.isPending ? 'Saving...' : 'Save Changes'}
             </Button>
           </div>

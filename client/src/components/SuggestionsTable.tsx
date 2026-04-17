@@ -1,5 +1,6 @@
 'use client';
 
+import { clsx } from 'clsx';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import type { SuggestionWithEmployee } from '@server/types';
@@ -47,9 +48,10 @@ export const SuggestionsTable = ({ suggestions, isLoading, selectedId, onSelect 
         {suggestions.map((suggestion) => (
           <TableRow
             key={suggestion.id}
-            className={`cursor-pointer transition-colors ${
+            className={clsx(
+              'cursor-pointer transition-colors',
               selectedId === suggestion.id ? 'bg-muted' : 'hover:bg-muted/50'
-            }`}
+            )}
             onClick={() => onSelect(suggestion)}
           >
             <TableCell className="font-medium">{suggestion.employee.name}</TableCell>
