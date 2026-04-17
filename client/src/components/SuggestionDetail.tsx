@@ -142,7 +142,11 @@ export const SuggestionDetail = ({
               <label className="text-xs font-medium uppercase text-muted-foreground mb-2 block">
                 Status
               </label>
-              <Select value={status} onValueChange={(v) => setStatus(v as SuggestionStatus)}>
+              <Select
+                items={SUGGESTION_STATUSES.map((s) => ({ label: statusLabels[s], value: s }))}
+                value={status}
+                onValueChange={(v) => setStatus(v as SuggestionStatus)}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>

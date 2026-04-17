@@ -45,54 +45,69 @@ export const FilterBar = ({ filters, onFiltersChange }: FilterBarProps) => {
     onFiltersChange({ page: 1, limit: filters.limit });
   };
 
+  const statusItems = [
+    { label: "All Statuses", value: null },
+    ...SUGGESTION_STATUSES.map((s) => ({ label: statusLabels[s], value: s })),
+  ];
+
+  const typeItems = [
+    { label: "All Types", value: null },
+    ...SUGGESTION_TYPES.map((t) => ({ label: typeLabels[t], value: t })),
+  ];
+
+  const employeeItems = [
+    { label: "All Employees", value: null },
+    ...employees.map((e) => ({ label: e.name, value: e.id })),
+  ];
+
   return (
     <div className="flex flex-wrap items-center gap-3">
       <Select
-        value={filters.status ?? "all"}
-        onValueChange={(v) => updateFilter("status", v === "all" ? undefined : v)}
+        items={statusItems}
+        value={filters.status ?? null}
+        onValueChange={(v) => updateFilter("status", v)}
       >
         <SelectTrigger className="w-[160px]">
           <SelectValue placeholder="All Statuses" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Statuses</SelectItem>
-          {SUGGESTION_STATUSES.map((s) => (
-            <SelectItem key={s} value={s}>
-              {statusLabels[s]}
+          {statusItems.map((item) => (
+            <SelectItem key={item.value ?? "all"} value={item.value}>
+              {item.label}
             </SelectItem>
           ))}
         </SelectContent>
       </Select>
 
       <Select
-        value={filters.type ?? "all"}
-        onValueChange={(v) => updateFilter("type", v === "all" ? undefined : v)}
+        items={typeItems}
+        value={filters.type ?? null}
+        onValueChange={(v) => updateFilter("type", v)}
       >
         <SelectTrigger className="w-[160px]">
           <SelectValue placeholder="All Types" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Types</SelectItem>
-          {SUGGESTION_TYPES.map((t) => (
-            <SelectItem key={t} value={t}>
-              {typeLabels[t]}
+          {typeItems.map((item) => (
+            <SelectItem key={item.value ?? "all"} value={item.value}>
+              {item.label}
             </SelectItem>
           ))}
         </SelectContent>
       </Select>
 
       <Select
-        value={filters.employeeId ?? "all"}
-        onValueChange={(v) => updateFilter("employeeId", v === "all" ? undefined : v)}
+        items={employeeItems}
+        value={filters.employeeId ?? null}
+        onValueChange={(v) => updateFilter("employeeId", v)}
       >
         <SelectTrigger className="w-[200px]">
           <SelectValue placeholder="All Employees" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Employees</SelectItem>
-          {employees.map((e) => (
-            <SelectItem key={e.id} value={e.id}>
-              {e.name}
+          {employeeItems.map((item) => (
+            <SelectItem key={item.value ?? "all"} value={item.value}>
+              {item.label}
             </SelectItem>
           ))}
         </SelectContent>
