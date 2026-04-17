@@ -147,14 +147,10 @@ export const SuggestionDetail = ({ suggestion, open, onOpenChange }: SuggestionD
           </div>
 
           <div className="flex gap-3 pt-2">
-            <Button variant="outline" className="flex-1 cursor-pointer" onClick={() => onOpenChange(false)}>
+            <Button variant="outline" className="flex-1" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button
-              className="flex-1 cursor-pointer"
-              onClick={handleSave}
-              disabled={!hasChanges || updateMutation.isPending}
-            >
+            <Button className="flex-1" onClick={handleSave} disabled={!hasChanges || updateMutation.isPending}>
               {updateMutation.isPending ? 'Saving...' : 'Save Changes'}
             </Button>
           </div>
